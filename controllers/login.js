@@ -1,4 +1,5 @@
 const user = require("../models/user");
+const verifyUser = require("../models/verifyUser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const client = require("../redis");
@@ -19,32 +20,40 @@ async function checkUser(email) {
 
 async function authenticateUser(email, password) {
   try {
+    //console.log(email, password);
     const userCheck = await user.findOne({ email: email });
-    //console.log(userCheck);
-    const validPassword = await bcrypt.compare(password, userCheck.password);
-    //console.log(validPassword);
-    if (validPassword) {
-      const token = jwt.sign({ email }, process.env.login_secret_token);
-      const response = {
-        id: userCheck._id,
-        name: userCheck.name,
-        email: userCheck.email,
-        token: token,
-        status: true,
-      };
+    if (userCheck) {
+      //console.log(userCheck);
+      const validPassword = await bcrypt.compare(password, userCheck.password);
+      //console.log(validPassword);
+      if (validPassword) {
+        const token = jwt.sign({ email }, process.env.login_secret_token);
+        const response = {
+          _id: userCheck._id,
+          name: userCheck.name,
+          email: userCheck.email,
+          token: token,
+          status: true,
+        };
 
-      //console.log(response);
-      if (!client.isOpen) {
-        await client.connect();
+        //console.log(response);
+        if (!client.isOpen) {
+          await client.connect();
+        }
+        await client.set(`key-${email}`, JSON.stringify(response));
+
+        await user.findOneAndUpdate(
+          { email: userCheck.email },
+          { $set: { token: token } },
+          { new: true }
+        );
+        return response;
       }
-      await client.set(`key-${email}`, JSON.stringify(response));
-
-      await user.findOneAndUpdate(
-        { email: userCheck.email },
-        { $set: { token: token } },
-        { new: true }
-      );
-      return response;
+    } else {
+      const verifyUserCheck = await verifyUser.findOne({ email: email });
+      if (verifyUserCheck) {
+        return "Verify your email";
+      }
     }
     return "Invalid username or password!";
   } catch (e) {
