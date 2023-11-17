@@ -1,0 +1,82 @@
+const user = require("../models/user");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const client = require("../redis");
+const dotenv = require("dotenv");
+dotenv.config();
+
+async function checkUser(email) {
+  try {
+    const user1 = await user.findOne({ email: email });
+    if (user1) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return "Server busy";
+  }
+}
+
+async function authenticateUser(email, password) {
+  try {
+    const userCheck = await user.findOne({ email: email });
+    //console.log(userCheck);
+    const validPassword = await bcrypt.compare(password, userCheck.password);
+    //console.log(validPassword);
+    if (validPassword) {
+      const token = jwt.sign({ email }, process.env.login_secret_token);
+      const response = {
+        id: userCheck._id,
+        name: userCheck.name,
+        email: userCheck.email,
+        token: token,
+        status: true,
+      };
+
+      //console.log(response);
+      if (!client.isOpen) {
+        await client.connect();
+      }
+      await client.set(`key-${email}`, JSON.stringify(response));
+
+      await user.findOneAndUpdate(
+        { email: userCheck.email },
+        { $set: { token: token } },
+        { new: true }
+      );
+      return response;
+    }
+    return "Invalid username or password!";
+  } catch (e) {
+    console.log("Error in login controller!", e);
+    return "Server Busy";
+  }
+}
+
+async function authorizeUser(token) {
+  try {
+    const decodedToken = jwt.verify(token, process.env.login_secret_token);
+    //console.log(decodedToken);
+    if (decodedToken) {
+      const email = await decodedToken.email;
+
+      if (!client.isOpen) {
+        await client.connect();
+      }
+      const auth = await client.get(`key-${email}`);
+
+      if (auth) {
+        const data = JSON.parse(auth);
+        return data;
+      } else {
+        const data = await user.findOne({ email: email });
+        return data;
+      }
+    }
+    return false;
+  } catch (e) {
+    console.log("Error in login controller!", e);
+  }
+}
+
+module.exports = { checkUser, authenticateUser, authorizeUser };
