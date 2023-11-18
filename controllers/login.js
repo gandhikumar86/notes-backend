@@ -10,9 +10,14 @@ async function checkUser(email) {
   try {
     const user1 = await user.findOne({ email: email });
     if (user1) {
-      return true;
+      return "user";
+    } else {
+      const verifyUser1 = await verifyUser.findOne({ email: email });
+      if (verifyUser1) {
+        return "verifyUser";
+      }
     }
-    return false;
+    return "none";
   } catch (e) {
     return "Server busy";
   }
