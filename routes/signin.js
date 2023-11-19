@@ -12,7 +12,6 @@ router.get("/:token", async (req, res) => {
     res.status(500).send(
       `<html>
          <body>
-          <h4>Registration failed!</h4>
           <p>Link expired!</p>
           <p>Regards,</p>
           <p>Team</p>

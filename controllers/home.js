@@ -1,4 +1,5 @@
 const note = require("../models/note");
+const category = require("../models/category");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -9,10 +10,21 @@ dotenv.config();
 async function getNotes(userId) {
   try {
     //console.log(userId);
-    const data = await note.find({ userId: userId });
-    return data;
+    const notes = await note.find({ userId: userId });
+    return notes;
   } catch (e) {
     console.log("Error in home controller: getNotes!", e);
+  }
+}
+
+async function getCategories(userId) {
+  try {
+    //console.log(userId);
+    const categories = await category.find({ userId: userId });
+
+    return categories;
+  } catch (e) {
+    console.log("Error in home controller: getCategories!", e);
   }
 }
 
@@ -24,7 +36,9 @@ async function addNote(noteArg) {
       title: noteArg.title,
       content: noteArg.content,
       userId: noteArg.userId,
+      categoryId: noteArg.categoryId,
     });
+    //console.log(JSON.stringify(newNote));
     var newInsertNoteId = "";
     await newNote
       .save()
@@ -63,4 +77,48 @@ async function deleteNote(deleteNoteId) {
   }
 }
 
-module.exports = { getNotes, addNote, editNote, deleteNote };
+async function addCategory(categ, userId) {
+  try {
+    const newCategory = new category({
+      name: categ,
+      userId: userId,
+    });
+    var newInsertedCategoryId = "";
+
+    await newCategory
+      .save()
+      .then((insertCategory) => (newInsertedCategoryId = insertCategory._id));
+    newCategory._id = newInsertedCategoryId;
+
+    return newCategory;
+  } catch (e) {
+    console.log("Error in home controller: addCategory!", e);
+  }
+}
+
+async function deleteCategory(deleteCategoryId) {
+  try {
+    var deleted = false;
+    await note
+      .deleteMany({ categoryId: deleteCategoryId })
+      .then(
+        await category
+          .findByIdAndDelete(deleteCategoryId)
+          .then((deleted = true))
+      );
+    //console.log(deleteNote);
+    return deleted;
+  } catch (e) {
+    console.log("Error in home controller: DeleteNote!", e);
+  }
+}
+
+module.exports = {
+  getNotes,
+  getCategories,
+  addNote,
+  editNote,
+  deleteNote,
+  addCategory,
+  deleteCategory,
+};

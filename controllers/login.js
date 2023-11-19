@@ -93,4 +93,17 @@ async function authorizeUser(token) {
   }
 }
 
-module.exports = { checkUser, authenticateUser, authorizeUser };
+async function logoutUser(email) {
+  try {
+    if (!client.isOpen) {
+      await client.connect();
+    }
+    await client.del(`key-${email}`);
+    return "deleted";
+  } catch (e) {
+    console.log("Error in login controller, logout!", e);
+    return "not deleted";
+  }
+}
+
+module.exports = { checkUser, authenticateUser, authorizeUser, logoutUser };

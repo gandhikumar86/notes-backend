@@ -5,6 +5,7 @@ const noteSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: "user",
     },
     title: {
       type: String,
@@ -17,6 +18,11 @@ const noteSchema = new mongoose.Schema(
     lastModified: {
       type: Date,
       default: Date.now(),
+    },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "category",
+      default: null,
     },
   },
   {

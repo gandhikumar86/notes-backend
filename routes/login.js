@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { authenticateUser } = require("../controllers/login");
+const { authenticateUser, logoutUser } = require("../controllers/login");
 
 router.post("/", async (req, res) => {
   try {
@@ -17,6 +17,23 @@ router.post("/", async (req, res) => {
     }
   } catch (e) {
     console.log("Error in login router!", e);
+    res.status(400).send("Server Busy");
+  }
+});
+
+router.post("/logout", async (req, res) => {
+  try {
+    const { email } = req.body;
+    //console.log(JSON.stringify(req.body));
+    const loginCredentials = await logoutUser(email);
+    //console.log(loginCredentials);
+    if (loginCredentials === "deleted") {
+      res.status(200).send("deleted");
+    } else {
+      res.status(200).send("not deleted");
+    }
+  } catch (e) {
+    console.log("Error in login router, logout!", e);
     res.status(400).send("Server Busy");
   }
 });
