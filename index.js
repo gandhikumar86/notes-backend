@@ -13,7 +13,7 @@ app.use(cors({ origin: "*" }));
 connectDB();
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Welcome to Notes App!");
 });
 
 app.use("/signin", signinRouter);
