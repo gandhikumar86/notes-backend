@@ -22,7 +22,7 @@ async function insertVerifyUser(name, email, password) {
 
     const activationLink = `${process.env.server_URL}/signin/${token}`;
     const content = `<h4>Hi, ${name}!</h4>
-    <h5>Welcome to the Note App!</h5>
+    <h5>Welcome to the Notes App!</h5>
     <p>Thank you for signing up!</p>
     <a href="${activationLink}">Click here</a>
     <p>Regards,</p>
@@ -30,7 +30,7 @@ async function insertVerifyUser(name, email, password) {
 
     await newUser.save();
     //console.log(newUser);
-    sendMail(email, "Verify your account for Note App!", content);
+    sendMail(email, "Verify your account for Notes App!", content);
   } catch (e) {
     console.log("Error in signin controller!", e);
   }
@@ -54,11 +54,15 @@ async function insertSignupUser(token) {
       await newUser.save();
       await userVerify.deleteOne({ token: token });
       const content = `<h4>Registration successful!</h4>
-    <h5>Welcome to the Note App!</h5>
+    <h5>Welcome to the Notes App!</h5>
     <p>You are successfully registered, ${userVerify.name}!</p>   
     <p>Regards,</p>
     <p>Team</p>`;
-      sendMail(newUser.email, "Registration successful for Note App!", content);
+      sendMail(
+        newUser.email,
+        "Registration successful for Notes App!",
+        content
+      );
       return content;
     }
     return `<p>Link expired!</p>
@@ -67,7 +71,7 @@ async function insertSignupUser(token) {
   } catch (e) {
     console.log("Error in signin controller!", e);
     return `<html>   <body>
-    <h5>Note App!</h5>
+    <h5>Notes App!</h5>
     <h4>Registration failed!</h4>
   <p>Unexpected error!</p>
   <p>Regards,</p>
