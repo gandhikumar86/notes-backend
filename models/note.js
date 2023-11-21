@@ -17,7 +17,7 @@ const noteSchema = new mongoose.Schema(
     },
     lastModified: {
       type: Date,
-      default: Date.now(),
+      default: () => Date.now(),
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,

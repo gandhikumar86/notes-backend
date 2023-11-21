@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
     },
     joinedOn: {
       type: Date,
-      default: Date.now(),
+      default: () => Date.now(),
     },
     forgotPassword: {
       time: Date,
