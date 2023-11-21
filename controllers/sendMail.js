@@ -8,6 +8,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.nodemailer_user,
     pass: process.env.nodemailer_password,
   },
+  from: process.env.nodemailer_user,
 });
 
 function sendMail(toEmail, subject, content) {
