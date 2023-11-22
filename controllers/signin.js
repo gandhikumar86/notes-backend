@@ -36,7 +36,8 @@ async function insertVerifyUser(name, email, password) {
       email,
       "Verify your account for Notes App!",
       content,
-      "This email is for your email id verification."
+      "This email is for your email id verification.",
+      name
     );
   } catch (e) {
     console.log("Error in signin controller!", e);
@@ -69,7 +70,8 @@ async function insertSignupUser(token) {
         newUser.email,
         "Registration successful for Notes App!",
         content,
-        "This email is for your successful registration."
+        "This email is for your successful registration.",
+        newUser.name
       );
       return content;
     }

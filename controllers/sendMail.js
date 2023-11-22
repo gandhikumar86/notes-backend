@@ -11,10 +11,10 @@ const transporter = nodemailer.createTransport({
   from: process.env.nodemailer_user,
 });
 
-function sendMail(toEmail, subject, content, text) {
+function sendMail(toEmail, subject, content, text, name) {
   const mailOption = {
-    from: process.env.nodemailer_user,
-    to: toEmail,
+    from: `Notes App <${process.env.nodemailer_user}>`,
+    to: `${name} <${toEmail}>`,
     subject: subject,
     text: text,
     html: content,
