@@ -30,7 +30,12 @@ async function insertVerifyUser(name, email, password) {
 
     await newUser.save();
     //console.log(newUser);
-    sendMail(email, "Verify your account for Notes App!", content);
+    sendMail(
+      email,
+      "Verify your account for Notes App!",
+      content,
+      "This email is for your email id verification."
+    );
   } catch (e) {
     console.log("Error in signin controller!", e);
   }
@@ -61,7 +66,8 @@ async function insertSignupUser(token) {
       sendMail(
         newUser.email,
         "Registration successful for Notes App!",
-        content
+        content,
+        "This email is for your successful registration."
       );
       return content;
     }
