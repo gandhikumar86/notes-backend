@@ -24,7 +24,7 @@ async function insertVerifyUser(name, email, password) {
     const content = `<h4>Hi, ${name}!</h4>
     <h5>Welcome to the Notes App!</h5>
     <p>Thank you for signing up!</p>
-    <a href="${activationLink}">Verify your account</a>
+    <p>Verify your account</p>
     <p>Or, copy and paste in your browser.<p/>
     <p>${activationLink}</p>
     <p>Regards,</p>
